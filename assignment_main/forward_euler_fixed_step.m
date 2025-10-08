@@ -14,34 +14,31 @@
 % num_evals: total number of calls made to rate_func_in during the integration
 function [t_list, X_list, h_avg, num_evals] = forward_euler_fixed_step(rate_func_in, tspan, X0, h_ref)
 
-    % calculate number of steps so that step size h is as close to h_ref as
-    % possible
+    % Calculate number of steps so that step size h is as close to h_ref as possible
     N = floor((tspan(2) - tspan(1)) / h_ref);
 
-    % initialize step size
+    % Actual step size
     h_avg = (tspan(2) - tspan(1)) / N;
 
-    % initialize t_list based on start time, end time, and number of
-    % samples
+    % Time vector
     t_list = linspace(tspan(1), tspan(2), N+1);
-    
-    % initialize solution list
-    X_list = zeros(length(t_list), length(X0));
-    X_list(1, :) = X0; % store initial condition
+
+    % Preallocate solution array (each row = one time step)
+    X_list = zeros(N+1, length(X0));
+    X_list(1,:) = X0;
 
     num_evals = 0; % initialize counter
 
-    for i=1:N
-        % evaluate XB at current time step using forward Euler
-        [XB, evals] = forward_euler_step(rate_func_in, t_list(i), X_list(i, :), h_avg);
+    for i = 1:N
+        % Evaluate next step
+        [XB, evals] = forward_euler_step(rate_func_in, t_list(i), X_list(i,:)', h_avg);
         
-        % add to solution list
-        X_list(i+1, :) = XB;
+        % Store result as row
+        X_list(i+1,:) = XB(:)';
 
-        % accumulate num_evals
+        % Accumulate evaluations
         num_evals = num_evals + evals;
     end
-
 end
 
 % This function computes the value of X at the next time step
@@ -60,12 +57,12 @@ end
 % num_evals: A count of the number of times that you called
 % rate_func_in when computing the next step
 function [XB, num_evals] = forward_euler_step(rate_func_in, t, XA, h)
-    % get current derivative from the input function at t and XA
+    % Evaluate derivative
     dXdt = rate_func_in(t, XA);
 
-    % evaluate XB at the next timestep
-    XB = XA + h*dXdt;
-    
-    % forward Euler only requires 1 function call
+    % Compute next state
+    XB = XA + h * dXdt;
+
+    % Forward Euler only calls rate_func_in once
     num_evals = 1;
 end

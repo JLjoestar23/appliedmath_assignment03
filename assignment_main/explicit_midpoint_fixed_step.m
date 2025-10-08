@@ -13,31 +13,29 @@
 % h_avg: the average step size
 % num_evals: total number of calls made to rate_func_in during the integration
 function [t_list, X_list, h_avg, num_evals] = explicit_midpoint_fixed_step(rate_func_in, tspan, X0, h_ref)
-    % calculate number of steps so that step size h is as close to h_ref as
-    % possible
+    % Calculate number of steps so that step size h is as close to h_ref as possible
     N = floor((tspan(2) - tspan(1)) / h_ref);
 
-    % initialize step size
+    % Actual step size
     h_avg = (tspan(2) - tspan(1)) / N;
 
-    % initialize t_list based on start time, end time, and number of
-    % samples
+    % Time vector
     t_list = linspace(tspan(1), tspan(2), N+1);
     
-    % initialize solution list
-    X_list = zeros(length(t_list), length(X0));
-    X_list(1, :) = X0; % store initial condition
+    % Preallocate solution array (each row = one time step)
+    X_list = zeros(N+1, length(X0));
+    X_list(1,:) = X0;
 
-    num_evals = 0; % initialize counter
+    num_evals = 0; % initialize function call counter
 
-    for i=1:N
-        % evaluate XB at current time step using explicit midpoint
-        [XB, evals] = explicit_midpoint_step(rate_func_in, t_list(i), X_list(i, :), h_avg);
+    for i = 1:N
+        % Evaluate next step using explicit midpoint
+        [XB, evals] = explicit_midpoint_step(rate_func_in, t_list(i), X_list(i,:)', h_avg);
         
-        % add to solution list
-        X_list(i+1, :) = XB;
+        % Store result (convert to row vector for X_list)
+        X_list(i+1,:) = XB(:)';
 
-        % accumulate num_evals
+        % Accumulate total number of evaluations
         num_evals = num_evals + evals;
     end
 end
@@ -58,17 +56,18 @@ end
 % num_evals: A count of the number of times that you called
 % rate_func_in when computing the next step
 function [XB, num_evals] = explicit_midpoint_step(rate_func_in, t, XA, h)
-    % get current derivative from the input function at t and XA
+    % Step 1: derivative at the start
     dXdt_1 = rate_func_in(t, XA);
 
-    % evaluate XB at the midpoint
-    XB_half = XA + (h/2)*dXdt_1;
-    
-    % calculate derivative from the input function at the midpoint
+    % Step 2: estimate midpoint value
+    XB_half = XA + (h/2) * dXdt_1;
+
+    % Step 3: derivative at midpoint
     dXdt_2 = rate_func_in(t + h/2, XB_half);
-    % evaluate XB
-    XB = XA + h*dXdt_2;
-    
-    % explicit midpoint requires 2 function calls
+
+    % Step 4: use midpoint derivative for final update
+    XB = XA + h * dXdt_2;
+
+    % Explicit midpoint requires 2 function calls per step
     num_evals = 2;
 end
