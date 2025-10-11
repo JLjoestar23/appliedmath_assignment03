@@ -57,11 +57,11 @@ h_ref = (0.1: 0.1: 0.4);
 
 figure();
 hold on;
-plot(t, test_func_analytical(t), 'b-', 'LineWidth', 2);
+plot(t, test_func_analytical(t), 'b-', 'LineWidth', 2, 'DisplayName', 'Analytical');
 
 for i=1:length(h_ref)
     [t_list, X_list, h_avg_1, num_evals_1] = explicit_midpoint_fixed_step(test_func_num, tspan, X0, h_ref(i));
-    plot(t_list, X_list, 'o-', 'MarkerSize', 4, 'LineWidth', 1);
+    plot(t_list, X_list, 'o-', 'MarkerSize', 4, 'LineWidth', 1, 'DisplayName', sprintf('h = %.2f', h_ref(i)));
 end
 
 title('Comparing Explicit Midpoint and Analytical Solutions for Test Function 01');
@@ -82,10 +82,10 @@ h_ref = (0.1: 0.1: 0.4);
 figure();
 hold on;
 val = test_func_analytical(t);
-plot(t, val(1, :), 'b-', 'LineWidth', 2);
+plot(t, val(1, :), 'b-', 'LineWidth', 2, 'DisplayName', 'Analytical');
 for i=1:length(h_ref)
     [t_list, X_list, h_avg_1, num_evals_1] = explicit_midpoint_fixed_step(test_func_num, tspan, X0, h_ref(i));
-    plot(t_list, X_list(:, 1), 'o-', 'MarkerSize', 4, 'LineWidth', 1);
+    plot(t_list, X_list(:, 1), 'o-', 'MarkerSize', 4, 'LineWidth', 1, 'DisplayName', sprintf('h = %.2f', h_ref(i)));
 end
 
 title('Comparing Forward Euler and Analytical Solutions for Test Function 02');
