@@ -7,20 +7,17 @@ function [global_trunc_error, num_evals] = calc_global_trunc_error(solver, rate_
     switch solver
         case 'ForwardEuler'
            [t_list, X_list_num, ~, num_evals] = forward_euler_fixed_step(rate_func_in, tspan, X0, h_ref);
-           X_list_ana = analytical_soln(t_list);
-           errors = norm(X_list_num(:) - X_list_ana(:));
+           X_list_ana = analytical_soln(t_list(end));
+           global_trunc_error = norm(X_list_num(end, :)' - X_list_ana);
 
-        case 'MidpointMethod'
+        case 'ExplicitMidpoint'
            [t_list, X_list_num, ~, num_evals] = explicit_midpoint_fixed_step(rate_func_in, tspan, X0, h_ref);
-           X_list_ana = analytical_soln(t_list);
-           errors = norm(X_list_num(:) - X_list_ana(:));
+           X_list_ana = analytical_soln(t_list(end));
+           global_trunc_error = norm(X_list_num(end, :)' - X_list_ana);
 
         otherwise
             warning('Invalid method');
             global_trunc_error = NaN;
             return;
     end
-
-    % Global truncation error = max of local errors across the interval
-    global_trunc_error = sum(errors);
 end
