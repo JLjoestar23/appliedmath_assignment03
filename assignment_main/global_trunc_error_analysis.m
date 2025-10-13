@@ -31,6 +31,7 @@ function global_trunc_error_analysis(method_list, rate_func, analytical_soln, ts
 
     % generate log-spaced step sizes
     h_list = logspace(-6, 1, num_trials);
+    h_avg_list = zeros(length(method_list), num_trials);
 
     % initialize storage arrays
     global_errors = zeros(length(method_list), num_trials);
@@ -46,7 +47,7 @@ function global_trunc_error_analysis(method_list, rate_func, analytical_soln, ts
 
         % compute global truncation error for each step size
         for j = 1:num_trials
-            [global_errors(i, j), num_evals_all(i, j)] = ...
+            [global_errors(i, j), h_avg_list(i, j), num_evals_all(i, j)] = ...
                 calc_global_trunc_error(method_name, rate_func, analytical_soln, tspan, h_list(j));
         end
 
@@ -55,31 +56,31 @@ function global_trunc_error_analysis(method_list, rate_func, analytical_soln, ts
         end_i   = floor(0.6*num_trials);
 
         % log-transformed data for regression
-        logh = log10(h_list(start_i:end_i));
-        logerr = log10(global_errors(i, start_i:end_i));
+        log_h = log10(h_avg_list(i, start_i:end_i));
+        log_err = log10(global_errors(i, start_i:end_i));
 
         % linear regression: log(err) = slope * log(h) + intercept
-        p = polyfit(logh, logerr, 1);
+        p = polyfit(log_h, log_err, 1);
         slope = p(1);
-        fit_vals = polyval(p, logh);
+        fit_vals = polyval(p, log_h);
 
         % plot: global truncation error vs. step size
         figure(1);
-        loglog(h_list, global_errors(i,:), error_data_presets{i}, ...
+        loglog(h_avg_list(i, :), global_errors(i, :), error_data_presets{i}, ...
                'MarkerSize', 5, 'DisplayName', method_name);
         hold on;
-        loglog(10.^logh, 10.^fit_vals, line_fit_presets{i}, ...
+        loglog(10.^log_h, 10.^fit_vals, line_fit_presets{i}, ...
                'LineWidth', 2, ...
                'DisplayName', sprintf('%s Fit (slope = %.2f)', method_name, slope));
 
         % second plot: global truncation error vs. number of evals
         log_num_evals = log10(num_evals_all(i, start_i:end_i));
-        p_eval = polyfit(log_num_evals, logerr, 1);
+        p_eval = polyfit(log_num_evals, log_err, 1);
         slope_eval = p_eval(1);
         fit_eval = polyval(p_eval, log_num_evals);
 
         figure(2);
-        loglog(num_evals_all(i,:), global_errors(i,:), error_data_presets{i}, ...
+        loglog(num_evals_all(i, :), global_errors(i, :), error_data_presets{i}, ...
                'MarkerSize', 5, 'DisplayName', sprintf('%s Data', method_name));
         hold on;
         loglog(10.^log_num_evals, 10.^fit_eval, line_fit_presets{i}, ...
