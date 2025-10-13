@@ -1,4 +1,22 @@
-function root_approx = multivariate_newton_solver(fun, x0, solver_params)
+% Computes the roots of a nonlinear system of equations using Newton's
+% method (multivariate form). Supports both analytical and numerically
+% approximated Jacobians.
+%
+% INPUTS:
+% fun: function handle defining the nonlinear system:
+% x0: initial guess for the root (vector).
+% solver_params: struct containing optional solver settings:
+% .max_iter: maximum number of iterations (default = 1000)
+% .dx_tol: tolerance for change in x (default = 1e-14)
+% .f_tol: tolerance for residual norm (default = 1e-14)
+% .dx_max: maximum allowed step size (default = 1e8)
+% .approx_j: flag for Jacobian computation (default = 1)
+%
+% OUTPUTS:
+% root_approx: Approximated root vector. Returns NaN if convergence fails 
+% or if the Jacobian becomes singular.
+% num_evals: number of times the input function was called
+function [root_approx, num_evals] = multivariate_newton_solver(fun, x0, solver_params)
     % basic implementation of Newton's method for numerical root finding
     
     % unpacking solver parameters from struct
@@ -20,7 +38,7 @@ function root_approx = multivariate_newton_solver(fun, x0, solver_params)
     
     dx_max = 1e8;
     if isfield(solver_params,'dx_max')
-        dx_max = solver_params.dxmax;
+        dx_max = solver_params.dx_max;
     end
 
     approx_j = 1;
@@ -31,14 +49,19 @@ function root_approx = multivariate_newton_solver(fun, x0, solver_params)
     status = 0; % convergence status
     x_n = x0(:); % initialize x_n for the first guess
 
+    num_evals = 0; % initialize num_evals
+
     % loop until iterations reached the specified maximum number
     for i=1:max_iter
 
         if approx_j == 1
             % evaluate the function at the approximated root
             f_val = fun(x_n);
+            num_evals = num_evals + 1; % instance of calling fun
             % numerically compute the Jacobian at x_n
-            J = approximate_jacobian(fun, x_n);
+            [J, J_num_evals] = approximate_jacobian(fun, x_n);
+            % include counted calls from approximate_jacobian function
+            num_evals = num_evals + J_num_evals;
         else
             % evaluate the function at the approximated root
             [f_val, J] = fun(x_n);
@@ -52,7 +75,7 @@ function root_approx = multivariate_newton_solver(fun, x0, solver_params)
         end
 
         % calculate the root approximation for the next iteration
-        x_next = x_n - J\f_val(:);
+        x_next = x_n - J\f_val;
         
         % break if the update step is too large
         if norm(x_next - x_n) > dx_max
@@ -61,7 +84,7 @@ function root_approx = multivariate_newton_solver(fun, x0, solver_params)
         end
         
         % check for convergence
-        if norm(x_next - x_n) < dx_tol || norm(fun(x_n)) < f_tol
+        if norm(x_next - x_n) < dx_tol || norm(f_val) < f_tol
             status = 1; % set status to success
             break
         end
