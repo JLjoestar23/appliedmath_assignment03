@@ -190,7 +190,7 @@ for i=1:length(h_ref)
     plot(t_list, X_list(:, 1), 'o-', 'MarkerSize', 4, 'LineWidth', 1, 'DisplayName', sprintf('h = %.2f', h_ref(i)));
 end
 
-title('Accuracy of Implicit Euler Integration for Varying Step Sizes');
+title('Accuracy of Implicit Midpoint Integration for Varying Step Sizes');
 legend();
 grid on;
 xlim([t_list(1) t_list(end)])
@@ -215,3 +215,50 @@ tspan = [0, 2*pi];
 num_trials = 500;
 
 global_trunc_error_analysis_modified(method_list, rate_func, analytical_soln, tspan, num_trials);
+
+%% Stability analysis between explicit and implicit methods
+
+test_func_num = @rate_func01;
+test_func_analytical = @solution01;
+
+tspan = [0; 3*pi];
+t = linspace(tspan(1), tspan(2), 500);
+X0 = 1;
+h_ref = 0.38;
+val = test_func_analytical(t);
+
+step_func_list = {@forward_euler_step, @implicit_euler_step, @explicit_midpoint_step, @implicit_midpoint_step};
+method_list = {'Forward Euler', 'Implicit Euler', 'Explicit Midpoint', 'Implicit Midpoint'};
+
+figure();
+for i=1:4
+    subplot(2, 2, i)
+    hold on;
+    plot(t, val, 'b-', 'LineWidth', 2, 'DisplayName', 'Analytical');
+    [t_list, X_list, ~, ~] = fixed_step_integration(test_func_num, step_func_list{i}, tspan, X0, h_ref);
+    plot(t_list, X_list(:, 1), 'o-', 'MarkerSize', 4, 'LineWidth', 1, 'DisplayName', 'Numerical');
+    title(method_list{i});
+    legend();
+    grid on;
+    hold off;
+end
+
+sgtitle('Stability Analysis between Methods, h = 0.38')
+
+
+h_ref = 0.45;
+figure();
+for i=1:4
+    subplot(2, 2, i)
+    hold on;
+    plot(t, val, 'b-', 'LineWidth', 2, 'DisplayName', 'Analytical');
+    [t_list, X_list, ~, ~] = fixed_step_integration(test_func_num, step_func_list{i}, tspan, X0, h_ref);
+    plot(t_list, X_list(:, 1), 'o-', 'MarkerSize', 4, 'LineWidth', 1, 'DisplayName', 'Numerical');
+    title(method_list{i});
+    legend();
+    grid on;
+    hold off;
+end
+
+sgtitle('Stability Analysis between Methods, h = 0.45')
+
