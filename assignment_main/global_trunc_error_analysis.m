@@ -30,7 +30,7 @@
 function global_trunc_error_analysis(method_list, rate_func, analytical_soln, tspan, num_trials)
 
     % generate log-spaced step sizes
-    h_list = logspace(-6, 1, num_trials);
+    h_list = logspace(-5, 1, num_trials);
     h_avg_list = zeros(length(method_list), num_trials);
 
     % initialize storage arrays
