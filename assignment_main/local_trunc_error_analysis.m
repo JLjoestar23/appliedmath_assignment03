@@ -64,11 +64,11 @@ function local_trunc_error_analysis(method_list, rate_func, analytical_soln, t_r
         % plot linear fit
         loglog(10.^log_h_list, 10.^fit_vals, line_fit_presets{i}, ...
                'LineWidth', 2, ...
-               'DisplayName', sprintf('%s Fit (slope = %.2f)', method_name, slope));
+               'DisplayName', sprintf('Fit (slope = %.2f)', slope));
     end
     
     % plot local timestep difference
-    loglog(h_list, local_h_diff, 'k-', 'LineWidth', 2, 'DisplayName', 'Local Timestep Difference')
+    loglog(h_list, local_h_diff, 'k-', 'LineWidth', 2, 'DisplayName', 'Local Timestep Diff')
 
     % labels and aesthetics
     title('Local Truncation Error vs. Step Size');
