@@ -3,10 +3,10 @@
 test_func_num = @rate_func01;
 test_func_analytical = @solution01;
 
-tspan = [0; 3*pi];
+tspan = [0; pi*pi];
 t = linspace(tspan(1), tspan(2), 500);
 X0 = [1, 0];
-h_ref = (0.1: 0.1: 0.4);
+h_ref = (0.1: 0.1: 0.3);
 
 figure();
 hold on;
@@ -14,13 +14,14 @@ val = test_func_analytical(t);
 plot(t, val(1, :), 'b-', 'LineWidth', 2, 'DisplayName', 'Analytical');
 for i=1:length(h_ref)
     [t_list, X_list, h_avg_1, num_evals_1] = forward_euler_fixed_step(test_func_num, tspan, X0, h_ref(i));
-    plot(t_list, X_list(:, 1), 'o-', 'MarkerSize', 4, 'LineWidth', 1, 'DisplayName', sprintf('h = %.2f', h_ref(i)));
+    plot(t_list, X_list(:, 1), '.-', 'MarkerSize', 10, 'LineWidth', 1, 'DisplayName', sprintf('h = %.2f', h_ref(i)));
 end
 
 title('Accuracy of Forward Euler Integration for Varying Step Sizes');
 legend();
 grid on;
-xlim([t_list(1) t_list(end)])
+xlim([t_list(1) t_list(end)]);
+ylim([-1.5 1.5]);
 hold off;
 
 %% Explicit Midpoint fixed Step
@@ -28,24 +29,26 @@ hold off;
 test_func_num = @rate_func01;
 test_func_analytical = @solution01;
 
-tspan = [0; 3*pi];
+tspan = [0; pi*pi];
 t = linspace(tspan(1), tspan(2), 500);
-X0 = 1;
-h_ref = (0.1: 0.1: 0.4);
+X0 = [1, 0];
+h_ref = (0.1: 0.1: 0.3);
 
 figure();
 hold on;
-plot(t, test_func_analytical(t), 'b-', 'LineWidth', 2, 'DisplayName', 'Analytical');
+soln = test_func_analytical(t);
+plot(t, soln(1,:), 'b-', 'LineWidth', 2, 'DisplayName', 'Analytical');
 
 for i=1:length(h_ref)
     [t_list, X_list, h_avg_1, num_evals_1] = explicit_midpoint_fixed_step(test_func_num, tspan, X0, h_ref(i));
-    plot(t_list, X_list, 'o-', 'MarkerSize', 4, 'LineWidth', 1, 'DisplayName', sprintf('h = %.2f', h_ref(i)));
+    plot(t_list, X_list(:, 1), '.-', 'MarkerSize', 10, 'LineWidth', 1, 'DisplayName', sprintf('h = %.2f', h_ref(i)));
 end
 
 title('Accuracy of Explicit Midpoint Integration for Varying Step Sizes');
 legend();
 grid on;
-xlim([t_list(1) t_list(end)])
+xlim([t_list(1) t_list(end)]);
+ylim([-1.5 1.5]);
 hold off;
 
 %% Calculate and plot local truncation error for Forward Euler and Explicit Midpoint Method
@@ -74,10 +77,10 @@ test_func_num = @rate_func01;
 test_func_analytical = @solution01;
 step_func = @implicit_euler_step;
 
-tspan = [0; 3*pi];
+tspan = [0; pi*pi];
 t = linspace(tspan(1), tspan(2), 500);
 X0 = [1, 0];
-h_ref = (0.1: 0.1: 0.4);
+h_ref = (0.1: 0.1: 0.3);
 
 figure();
 hold on;
@@ -85,13 +88,14 @@ val = test_func_analytical(t);
 plot(t, val(1, :), 'b-', 'LineWidth', 2, 'DisplayName', 'Analytical');
 for i=1:length(h_ref)
     [t_list, X_list, h_avg_1, num_evals_1] = fixed_step_integration(test_func_num, step_func, tspan, X0, h_ref(i));
-    plot(t_list, X_list(:, 1), 'o-', 'MarkerSize', 4, 'LineWidth', 1, 'DisplayName', sprintf('h = %.2f', h_ref(i)));
+    plot(t_list, X_list(:, 1), '.-', 'MarkerSize', 10, 'LineWidth', 1, 'DisplayName', sprintf('h = %.2f', h_ref(i)));
 end
 
 title('Accuracy of Implicit Euler Integration for Varying Step Sizes');
 legend();
 grid on;
-xlim([t_list(1) t_list(end)])
+xlim([t_list(1) t_list(end)]);
+ylim([-1.5 1.5]);
 hold off;
 
 %% Implicit Midpoint Fixed Step
@@ -100,10 +104,10 @@ test_func_num = @rate_func01;
 test_func_analytical = @solution01;
 step_func = @implicit_midpoint_step;
 
-tspan = [0; 3*pi];
+tspan = [0; pi*pi];
 t = linspace(tspan(1), tspan(2), 500);
 X0 = [1, 0];
-h_ref = (0.1: 0.1: 0.4);
+h_ref = (0.1: 0.1: 0.3);
 
 figure();
 hold on;
@@ -111,18 +115,19 @@ val = test_func_analytical(t);
 plot(t, val(1, :), 'b-', 'LineWidth', 2, 'DisplayName', 'Analytical');
 for i=1:length(h_ref)
     [t_list, X_list, h_avg_1, num_evals_1] = fixed_step_integration(test_func_num, step_func, tspan, X0, h_ref(i));
-    plot(t_list, X_list(:, 1), 'o-', 'MarkerSize', 4, 'LineWidth', 1, 'DisplayName', sprintf('h = %.2f', h_ref(i)));
+    plot(t_list, X_list(:, 1), '.-', 'MarkerSize', 10, 'LineWidth', 1, 'DisplayName', sprintf('h = %.2f', h_ref(i)));
 end
 
-title('Accuracy of Implicit Euler Integration for Varying Step Sizes');
+title('Accuracy of Implicit Midpoint Integration for Varying Step Sizes');
 legend();
 grid on;
-xlim([t_list(1) t_list(end)])
+xlim([t_list(1) t_list(end)]);
+ylim([-1.5 1.5]);
 hold off;
 
 %% Local truncation error comparison bewteen explicit and implicit methods
 
-method_list = {'ForwardEuler', 'ExplicitMidpoint', 'ImplicitEuler', 'ImplicitMidpoint'};
+method_list = {'ForwardEuler', 'ExplicitMidpoint', 'BackwardEuler', 'ImplicitMidpoint'};
 rate_func = @rate_func01;
 analytical_soln = @solution01;
 t_ref = 0.314;
@@ -132,7 +137,7 @@ local_trunc_error_analysis_modified(method_list, rate_func, analytical_soln, t_r
 
 %% Global truncation error comparison bewteen explicit and implicit methods
 
-method_list = {'ForwardEuler', 'ExplicitMidpoint', 'ImplicitEuler', 'ImplicitMidpoint'};
+method_list = {'ForwardEuler', 'ExplicitMidpoint', 'BackwardEuler', 'ImplicitMidpoint'};
 rate_func = @rate_func01;
 analytical_soln = @solution01;
 tspan = [0, 2*pi];
@@ -160,14 +165,14 @@ for i=1:4
     hold on;
     plot(t, val, 'b-', 'LineWidth', 2, 'DisplayName', 'Analytical');
     [t_list, X_list, ~, ~] = fixed_step_integration(test_func_num, step_func_list{i}, tspan, X0, h_ref);
-    plot(t_list, X_list(:, 1), 'o-', 'MarkerSize', 4, 'LineWidth', 1, 'DisplayName', 'Numerical');
+    plot(t_list, X_list(:, 1), '.-', 'MarkerSize', 10, 'LineWidth', 1, 'DisplayName', 'Numerical');
     title(method_list{i});
-    legend();
+    %legend();
     grid on;
     hold off;
 end
 
-sgtitle('Stability Analysis between Methods, h = 0.38')
+sgtitle('Stability analysis between methods, h = 0.38')
 
 
 h_ref = 0.45;
@@ -177,12 +182,12 @@ for i=1:4
     hold on;
     plot(t, val, 'b-', 'LineWidth', 2, 'DisplayName', 'Analytical');
     [t_list, X_list, ~, ~] = fixed_step_integration(test_func_num, step_func_list{i}, tspan, X0, h_ref);
-    plot(t_list, X_list(:, 1), 'o-', 'MarkerSize', 4, 'LineWidth', 1, 'DisplayName', 'Numerical');
+    plot(t_list, X_list(:, 1), '.-', 'MarkerSize', 10, 'LineWidth', 1, 'DisplayName', 'Numerical');
     title(method_list{i});
-    legend();
+    %legend();
     grid on;
     hold off;
 end
 
-sgtitle('Stability Analysis between Methods, h = 0.45')
+sgtitle('Stability analysis between methods, h = 0.45')
 
