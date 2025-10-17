@@ -26,7 +26,7 @@ function [local_trunc_error, local_h_diff] = calc_local_trunc_error(solver, rate
             % Numerical next step
             XB_num = XA + h*dXdt_2;
 
-        case 'ImplicitEuler'
+        case 'BackwardEuler'
             % initializing solver params
             solver_params.approx_j = 1;
             

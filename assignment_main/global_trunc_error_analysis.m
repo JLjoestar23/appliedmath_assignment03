@@ -53,7 +53,7 @@ function global_trunc_error_analysis(method_list, rate_func, analytical_soln, ts
 
         % choose central range for line fitting (middle 60%)
         start_i = floor(0.2*num_trials);
-        end_i   = floor(0.6*num_trials);
+        end_i   = floor(0.5*num_trials);
 
         % log-transformed data for regression
         log_h = log10(h_avg_list(i, start_i:end_i));

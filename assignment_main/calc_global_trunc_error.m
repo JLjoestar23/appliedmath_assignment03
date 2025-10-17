@@ -11,8 +11,8 @@ function [global_trunc_error, h_avg, num_evals] = calc_global_trunc_error(solver
         case 'ExplicitMidpoint'
            step_func = @explicit_midpoint_step;
 
-        case 'ImplicitEuler'
-           step_func = @implicit_euler_step;
+        case 'BackwardEuler'
+           step_func = @backward_euler_step;
 
         case 'ImplicitMidpoint'
            step_func = @implicit_midpoint_step;
